@@ -41,3 +41,26 @@ func (r *Repository) CreateNewChatRoom(chatRoomModel *dbModels.ChatRoom, memberI
 
 	return nil
 }
+
+func (r *Repository) GetChatRoomByMemberIds(chatRoomModel *dbModels.ChatRoom, memberIds ...int64) error {
+	statement, err := r.DatabaseClient.Prepare(
+		`SELECT C0.chat_room_id, C0.created_at, C0.updated_at 
+		FROM chat_room_members AS C0
+		JOIN chat_room_members AS C1 ON C1.chat_room_id = C0.chat_room_id AND C1.user_id = $2
+		WHERE C0.deleted_at IS NULL AND C0.user_id = $1`,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err = statement.QueryRow(memberIds[0], memberIds[1]).
+		Scan(
+			&chatRoomModel.ChatRoomID,
+			&chatRoomModel.CreatedAt,
+			&chatRoomModel.UpdatedAt,
+		); err != nil {
+		return err
+	}
+
+	return nil
+}

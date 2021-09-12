@@ -23,3 +23,12 @@ type ChatRoomMessage struct {
 	CreatedAt         string `json:"created_at"`
 	UpdatedAt         string `json:"updated_at"`
 }
+
+type ChatReadHistory struct {
+	ChatReadHistoryID int64  `json:"chat_read_history_id"`
+	ChatRoomID        int64  `json:"chat_room_id"`
+	MessageID         int64  `json:"message_id"`
+	ReadBy            int64  `json:"read_by"`
+	CreatedAt         string `json:"created_at"`
+	UpdatedAt         string `json:"updated_at"`
+}
