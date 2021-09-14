@@ -32,3 +32,23 @@ type ChatReadHistory struct {
 	CreatedAt         string `json:"created_at"`
 	UpdatedAt         string `json:"updated_at"`
 }
+
+type ChatRoomPreview struct {
+	ChatRoomID     int64                  `json:"chat_room_id"`
+	ChatRoomName   string                 `json:"chat_room_name"`
+	TotalUnreads   int                    `json:"total_unreads"`
+	PreviewMessage ChatRoomPreviewMessage `json:"chat_room_preview_message"`
+}
+
+type ChatRoomPreviewMessage struct {
+	MessageType    string `json:"message_type"`
+	MessageContent string `json:"message_content"`
+	SenderName     string `json:"sender_name"`
+	SentAt         string `json:"sent_at"`
+}
+
+type ChatRoomDetail struct {
+	ChatRoomID   int64             `json:"chat_room_id"`
+	ChatRoomName string            `json:"chat_room_name"`
+	Messages     []ChatRoomMessage `json:"chat_messages"`
+}

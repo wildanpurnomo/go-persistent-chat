@@ -5,6 +5,7 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/wildanpurnomo/go-persistent-chat/server/controllers"
+	dbModels "github.com/wildanpurnomo/go-persistent-chat/server/db/models"
 	authLibs "github.com/wildanpurnomo/go-persistent-chat/server/libs/auth"
 	logLibs "github.com/wildanpurnomo/go-persistent-chat/server/libs/logs"
 )
@@ -22,8 +23,8 @@ var (
 			memberIds = append(memberIds, int64(inputId.(int)))
 		}
 
-		chatRoomModel, err := controllers.CreateChatRoom(memberIds...)
-		if err != nil {
+		var chatRoomModel dbModels.ChatRoom
+		if err := controllers.CreateChatRoom(&chatRoomModel, memberIds...); err != nil {
 			logLibs.LogIfDebug(err.Error())
 			return nil, errors.New("Chat Room Creation Is Failed")
 		}
