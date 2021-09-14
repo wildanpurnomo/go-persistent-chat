@@ -2,7 +2,6 @@ package gqlTypes
 
 import (
 	"github.com/graphql-go/graphql"
-	gqlResolvers "github.com/wildanpurnomo/go-persistent-chat/server/gql/resolvers"
 )
 
 var (
@@ -10,18 +9,17 @@ var (
 		graphql.ObjectConfig{
 			Name: "QueryType",
 			Fields: graphql.Fields{
-				"login": &graphql.Field{
-					Type:        UserType,
-					Description: "Login as a user",
+				"echo": &graphql.Field{
+					Type:        graphql.String,
+					Description: "Echo",
 					Args: graphql.FieldConfigArgument{
-						"username": &graphql.ArgumentConfig{
-							Type: graphql.NewNonNull(graphql.String),
-						},
-						"password": &graphql.ArgumentConfig{
+						"msg": &graphql.ArgumentConfig{
 							Type: graphql.NewNonNull(graphql.String),
 						},
 					},
-					Resolve: gqlResolvers.LoginResolver,
+					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+						return p.Args["msg"].(string), nil
+					},
 				},
 			},
 		},

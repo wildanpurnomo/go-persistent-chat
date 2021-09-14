@@ -34,7 +34,7 @@
                   class="white--text red accent-2 rounded-xl"
                   :disabled="isFormLoading"
                   :loading="isFormLoading"
-                  @click.prevent="login"
+                  @click.prevent="initiateLogin"
                   >Masuk</v-btn
                 >
               </div>
@@ -55,19 +55,43 @@
   </v-container>
 </template>
 <script>
+import gql from "graphql-tag";
 import UserModel from "@/models/user.model";
 
 export default {
   name: "Login",
   data: () => ({
     user: new UserModel(),
+    isFormLoading: false,
     isPasswordShown: false,
     errorMessage: "",
     colorTheme: "#4F4F68",
   }),
-  methods: {},
-  mounted() {
-    console.log(this.$refs);
+  methods: {
+    async initiateLogin() {
+      try {
+        let result = await this.$apollo.mutate({
+          mutation: gql`
+            mutation ($username: String!, $password: String!) {
+              login(username: $username, password: $password) {
+                user_id
+                username
+                created_at
+                updated_at
+              }
+            }
+          `,
+          variables: {
+            username: this.user.username,
+            password: this.user.password,
+          },
+        });
+
+        console.log(result);
+      } catch (error) {
+        console.error(error)
+      }
+    },
   },
 };
 </script>

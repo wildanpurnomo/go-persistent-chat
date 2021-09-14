@@ -23,6 +23,19 @@ var (
 					},
 					Resolve: gqlResolvers.RegisterResolver,
 				},
+				"login": &graphql.Field{
+					Type:        UserType,
+					Description: "Login as a user",
+					Args: graphql.FieldConfigArgument{
+						"username": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+						"password": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+					},
+					Resolve: gqlResolvers.LoginResolver,
+				},
 				"create_chat_room": &graphql.Field{
 					Type:        ChatRoomType,
 					Description: "Create new chat room",
