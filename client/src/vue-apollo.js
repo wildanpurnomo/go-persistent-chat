@@ -30,7 +30,7 @@ const defaultOptions = {
 
   httpLinkOptions: {
     credentials: "include"
-  }
+  },
 
   // Override default apollo link
   // note: don't override httpLink here, specify httpLink options in the

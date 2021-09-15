@@ -9,7 +9,7 @@
             </v-row>
             <v-form ref="loginForm">
               <v-text-field
-                v-model="user.username"
+                v-model="userData.username"
                 label="Username"
                 type="text"
                 append-icon="mdi-account"
@@ -17,7 +17,7 @@
                 dark
               ></v-text-field>
               <v-text-field
-                v-model="user.password"
+                v-model="userData.password"
                 label="Password"
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="isPasswordShown ? 'text' : 'password'"
@@ -61,7 +61,7 @@ import UserModel from "@/models/user.model";
 export default {
   name: "Login",
   data: () => ({
-    user: new UserModel(),
+    userData: new UserModel(),
     isFormLoading: false,
     isPasswordShown: false,
     errorMessage: "",
@@ -70,7 +70,7 @@ export default {
   methods: {
     async initiateLogin() {
       try {
-        let result = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: gql`
             mutation ($username: String!, $password: String!) {
               login(username: $username, password: $password) {
@@ -82,14 +82,14 @@ export default {
             }
           `,
           variables: {
-            username: this.user.username,
-            password: this.user.password,
+            username: this.userData.username,
+            password: this.userData.password,
           },
         });
 
-        console.log(result);
+        this.$apollo.onLogin();
       } catch (error) {
-        console.error(error)
+        console.log("GQL call failed: ", error);
       }
     },
   },
