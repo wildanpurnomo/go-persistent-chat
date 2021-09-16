@@ -4,19 +4,20 @@
 <script>
 import { EventBus } from "@/bus";
 import AUTH_QUERY from "@/gql/queries/Authenticate.gql";
+import UserModel from "@/models/user.model";
 
 export default {
   name: "Auth",
 
   data: () => ({
-    me: {},
+    me: new UserModel(),
   }),
 
   apollo: {
     me: {
       query: AUTH_QUERY,
-      update() {
-        this.logUserIn();
+      update(data) {
+        if (data.me) this.logUserIn();
       },
     },
   },

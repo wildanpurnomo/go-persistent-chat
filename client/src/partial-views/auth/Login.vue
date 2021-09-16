@@ -56,7 +56,6 @@
   </v-container>
 </template>
 <script>
-import AUTH_QUERY from "@/gql/queries/Authenticate.gql";
 import LOGIN_MUTATION from "@/gql/mutations/Login.gql";
 import UserModel from "@/models/user.model";
 import Snackbar from "@/components/Snackbar.vue";
@@ -85,18 +84,6 @@ export default {
           variables: {
             username: this.userData.username,
             password: this.userData.password,
-          },
-          update: (store, { data: { login } }) => {
-            if (login.user_id) {
-              let data = store.readQuery({
-                query: AUTH_QUERY,
-              });
-              data.me = login;
-              store.writeQuery({
-                query: AUTH_QUERY,
-                data,
-              });
-            }
           },
           optimisticResponse: {
             __typename: "Mutation",

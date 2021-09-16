@@ -10,6 +10,7 @@
         >Wappita</v-toolbar-title
       >
       <v-spacer></v-spacer>
+      <v-toolbar-title>Selamat datang, {{ username }}</v-toolbar-title>
       <v-btn @click="logout" text class="pr-1">
         <span class="hidden-sm-and-down">Logout</span>
         <v-icon>mdi-logout-variant</v-icon>
@@ -22,6 +23,10 @@ import { EventBus } from "@/bus";
 
 export default {
   name: "Navbar",
+
+  props: {
+    username: String,
+  },
 
   data: () => ({
     isDrawer: false,

@@ -66,7 +66,6 @@
   </v-container>
 </template>
 <script>
-import AUTH_QUERY from "@/gql/queries/Authenticate.gql";
 import REGISTER_MUTATION from "@/gql/mutations/Register.gql";
 import UserModel from "@/models/user.model";
 import formMixin from "@/mixins/form.mixin";
@@ -106,18 +105,6 @@ export default {
           variables: {
             username: this.userData.username,
             password: this.userData.password,
-          },
-          update: (store, { data: { register } }) => {
-            if (register.user_id) {
-              let data = store.readQuery({
-                query: AUTH_QUERY,
-              });
-              data.me = register;
-              store.writeQuery({
-                query: AUTH_QUERY,
-                data,
-              });
-            }
           },
           optimisticResponse: {
             __typename: "Mutation",
