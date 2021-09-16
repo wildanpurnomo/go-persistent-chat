@@ -36,6 +36,11 @@ var (
 					},
 					Resolve: gqlResolvers.LoginResolver,
 				},
+				"logout": &graphql.Field{
+					Type:        graphql.Boolean,
+					Description: "Log requesting user out",
+					Resolve:     gqlResolvers.LogoutResolver,
+				},
 				"create_chat_room": &graphql.Field{
 					Type:        ChatRoomType,
 					Description: "Create new chat room",

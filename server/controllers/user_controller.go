@@ -8,6 +8,14 @@ import (
 	dbModels "github.com/wildanpurnomo/go-persistent-chat/server/db/models"
 )
 
+func Authenticate(userModel *dbModels.User) error {
+	if err := db.AppRepository.GetUserById(userModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func Register(userModel *dbModels.User) error {
 	userModel.TrimUsername()
 

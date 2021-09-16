@@ -34,7 +34,7 @@
                   class="white--text red accent-2 rounded-xl"
                   :disabled="isFormLoading"
                   :loading="isFormLoading"
-                  @click.prevent="initiateLogin"
+                  @click.prevent="login"
                   >Masuk</v-btn
                 >
               </div>
@@ -52,46 +52,83 @@
         </v-row>
       </v-col>
     </v-row>
+    <Snackbar :duration="3000" />
   </v-container>
 </template>
 <script>
-import gql from "graphql-tag";
+import AUTH_QUERY from "@/gql/queries/Authenticate.gql";
+import LOGIN_MUTATION from "@/gql/mutations/Login.gql";
 import UserModel from "@/models/user.model";
+import Snackbar from "@/components/Snackbar.vue";
+import { EventBus } from "@/bus";
+import formMixin from "@/mixins/form.mixin";
 
 export default {
   name: "Login",
+
+  components: {
+    Snackbar,
+  },
+
+  mixins: [formMixin],
+
   data: () => ({
     userData: new UserModel(),
-    isFormLoading: false,
-    isPasswordShown: false,
-    errorMessage: "",
     colorTheme: "#4F4F68",
   }),
+
   methods: {
-    async initiateLogin() {
+    async login() {
       try {
-        await this.$apollo.mutate({
-          mutation: gql`
-            mutation ($username: String!, $password: String!) {
-              login(username: $username, password: $password) {
-                user_id
-                username
-                created_at
-                updated_at
-              }
-            }
-          `,
+        let result = await this.$apollo.mutate({
+          mutation: LOGIN_MUTATION,
           variables: {
             username: this.userData.username,
             password: this.userData.password,
           },
+          update: (store, { data: { login } }) => {
+            if (login.user_id) {
+              let data = store.readQuery({
+                query: AUTH_QUERY,
+              });
+              data.me = login;
+              store.writeQuery({
+                query: AUTH_QUERY,
+                data,
+              });
+            }
+          },
+          optimisticResponse: {
+            __typename: "Mutation",
+            login: {
+              __typename: "UserType",
+              user_id: -1,
+              username: "",
+              created_at: "",
+              updated_at: "",
+            },
+          },
         });
 
-        this.$apollo.onLogin();
+        if (result !== null) {
+          EventBus.$emit("onAuthSuccess", true);
+        } else {
+          EventBus.$emit(
+            "onShowSnackbar",
+            "An unexpected error happened. Please try again"
+          );
+        }
       } catch (error) {
-        console.log("GQL call failed: ", error);
+        EventBus.$emit("onShowSnackbar", "Wrong credentials or user not found");
       }
     },
+  },
+
+  mounted() {
+    let params = this.$route.params;
+    if (params.snackbarMessage) {
+      EventBus.$emit("onShowSnackbar", params.snackbarMessage);
+    }
   },
 };
 </script>

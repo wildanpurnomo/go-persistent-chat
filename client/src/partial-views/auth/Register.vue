@@ -9,7 +9,7 @@
             </v-row>
             <v-form ref="registerForm" v-model="isFormValid">
               <v-text-field
-                v-model="user.username"
+                v-model="userData.username"
                 :rules="this.usernameRules"
                 label="Username"
                 type="text"
@@ -17,15 +17,7 @@
                 dark
               ></v-text-field>
               <v-text-field
-                v-model="user.email"
-                :rules="this.emailRules"
-                label="Email"
-                type="email"
-                required
-                dark
-              ></v-text-field>
-              <v-text-field
-                v-model="user.password"
+                v-model="userData.password"
                 :rules="this.passwordRules"
                 label="Password"
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
@@ -35,7 +27,7 @@
                 dark
               ></v-text-field>
               <v-text-field
-                v-model="user.passwordConfirmation"
+                v-model="userData.passwordConfirmation"
                 label="Konfirmasi Password"
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="isPasswordShown ? 'text' : 'password'"
@@ -51,7 +43,7 @@
                   width="70%"
                   :disabled="!isFormValid || isFormLoading"
                   :loading="isFormLoading"
-                  @click.prevent="register"
+                  @click.prevent="initiateRegister"
                   dark
                   >Register</v-btn
                 >
@@ -70,28 +62,87 @@
         </v-row>
       </v-col>
     </v-row>
+    <Snackbar :duration="3000" />
   </v-container>
 </template>
 <script>
+import AUTH_QUERY from "@/gql/queries/Authenticate.gql";
+import REGISTER_MUTATION from "@/gql/mutations/Register.gql";
 import UserModel from "@/models/user.model";
+import formMixin from "@/mixins/form.mixin";
+import Snackbar from "@/components/Snackbar.vue";
+import { EventBus } from "@/bus.js";
 
 export default {
   name: "Register",
+
+  components: {
+    Snackbar,
+  },
+
+  mixins: [formMixin],
+
   data: () => ({
-    user: new UserModel(),
-    errorMessage: "",
+    userData: new UserModel(),
     passwordConfirmation: "",
-    isPasswordShown: false,
     colorTheme: "#4F4F68",
   }),
+
   computed: {
     passwordConfirmationRules() {
       return [
         (v) =>
-          (!!v && v) === this.user.password || "Masukkan password yang sama.",
+          (!!v && v) === this.userData.password ||
+          "Masukkan password yang sama.",
       ];
     },
   },
-  methods: {}
+
+  methods: {
+    async register() {
+      try {
+        let result = await this.$apollo.mutate({
+          mutation: REGISTER_MUTATION,
+          variables: {
+            username: this.userData.username,
+            password: this.userData.password,
+          },
+          update: (store, { data: { register } }) => {
+            if (register.user_id) {
+              let data = store.readQuery({
+                query: AUTH_QUERY,
+              });
+              data.me = register;
+              store.writeQuery({
+                query: AUTH_QUERY,
+                data,
+              });
+            }
+          },
+          optimisticResponse: {
+            __typename: "Mutation",
+            login: {
+              __typename: "UserType",
+              user_id: -1,
+              username: "",
+              created_at: "",
+              updated_at: "",
+            },
+          },
+        });
+
+        if (result !== null) {
+          EventBus.$emit("onAuthSuccess", true);
+        } else {
+          EventBus.$emit(
+            "onShowSnackbar",
+            "An unexpected error happened. Please try again"
+          );
+        }
+      } catch (error) {
+        EventBus.$emit("onShowSnackbar", "Wrong credentials or user not found");
+      }
+    },
+  },
 };
 </script>

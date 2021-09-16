@@ -5,11 +5,10 @@
         <v-img src="@/assets/landing.png" max-width="600"></v-img>
       </v-col>
       <v-col>
-        <v-card-title class="font py-5">
-          Wappita
-        </v-card-title>
+        <v-card-title class="fontLobsterTwo py-5"> Wappita </v-card-title>
         <v-card-text class="ma-2">
-          Bagikan dan temukan pengetahuan baru. Perluas pengetahuan anda dengan membaca berbagai konten yang menarik.
+          Bagikan dan temukan pengetahuan baru. Perluas pengetahuan anda dengan
+          membaca berbagai konten yang menarik.
         </v-card-text>
         <v-row class="pl-8 pt-6">
           <div class="mr-8">
@@ -18,7 +17,8 @@
               outlined
               width="100"
               :to="{ name: 'Login' }"
-            >Masuk</v-btn>
+              >Masuk</v-btn
+            >
           </div>
           <div>
             <v-btn
@@ -26,7 +26,8 @@
               :color="colorTheme"
               outlined
               :to="{ name: 'Register' }"
-            >Register</v-btn>
+              >Register</v-btn
+            >
           </div>
         </v-row>
       </v-col>
@@ -44,11 +45,10 @@ export default {
   }),
 };
 </script>
+
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Lobster+Two:wght@700&display=swap");
-.font {
-  font-family: Lobster Two;
+.fontLobsterTwo {
   font-size: 50px;
-  color: #394867
+  color: #394867;
 }
 </style>

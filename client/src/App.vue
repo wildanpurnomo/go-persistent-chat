@@ -10,10 +10,15 @@
 export default {
   name: "App",
 
-  components: {},
-
   data: () => ({
     //
   }),
 };
 </script>
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Lobster+Two:wght@700&display=swap");
+.fontLobsterTwo {
+  font-family: Lobster Two;
+}
+</style>
