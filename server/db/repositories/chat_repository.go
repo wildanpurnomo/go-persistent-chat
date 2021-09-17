@@ -11,7 +11,11 @@ func (r *Repository) CreateNewChatRoom(chatRoomModel *dbModels.ChatRoom, memberI
 		return err
 	}
 
-	if err = transaction.QueryRow("INSERT INTO chat_rooms DEFAULT VALUES RETURNING chat_room_id, created_at, updated_at").
+	if err = transaction.QueryRow(
+		`INSERT INTO chat_rooms 
+		DEFAULT VALUES 
+		RETURNING chat_room_id, created_at, updated_at`,
+	).
 		Scan(
 			&chatRoomModel.ChatRoomID,
 			&chatRoomModel.CreatedAt,
@@ -22,7 +26,10 @@ func (r *Repository) CreateNewChatRoom(chatRoomModel *dbModels.ChatRoom, memberI
 	}
 
 	for _, memberId := range memberIds {
-		statement, err := transaction.Prepare("INSERT INTO chat_room_members(chat_room_id, user_id) VALUES($1, $2)")
+		statement, err := transaction.Prepare(
+			`INSERT INTO chat_room_members(chat_room_id, user_id) 
+			VALUES($1, $2)`,
+		)
 		if err != nil {
 			transaction.Rollback()
 			return err
@@ -151,7 +158,11 @@ func (r *Repository) CreateChatMessage(chatMessage *dbModels.ChatRoomMessage) er
 		return err
 	}
 
-	statement, err := transaction.Prepare("INSERT INTO chat_room_messages(chat_room_id, sender_id, message_type, message_content) VALUES($1, $2, $3, $4) RETURNING chat_room_message_id")
+	statement, err := transaction.Prepare(
+		`INSERT INTO chat_room_messages(chat_room_id, sender_id, message_type, message_content) 
+		VALUES($1, $2, $3, $4) 
+		RETURNING chat_room_message_id`,
+	)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -167,7 +178,10 @@ func (r *Repository) CreateChatMessage(chatMessage *dbModels.ChatRoomMessage) er
 		return err
 	}
 
-	statement, err = transaction.Prepare("INSERT INTO chat_read_histories(chat_room_id, message_id, read_by) VALUES($1, $2, $3)")
+	statement, err = transaction.Prepare(
+		`INSERT INTO chat_read_histories(chat_room_id, message_id, read_by) 
+		VALUES($1, $2, $3)`,
+	)
 	if err != nil {
 		transaction.Rollback()
 		return err
@@ -187,7 +201,10 @@ func (r *Repository) CreateChatMessage(chatMessage *dbModels.ChatRoomMessage) er
 }
 
 func (r *Repository) CreateReadHistory(readHistory *dbModels.ChatReadHistory) error {
-	statement, err := r.DatabaseClient.Prepare("INSERT INTO chat_read_histories(chat_room_id, message_id, read_by) VALUES($1, $2, $3)")
+	statement, err := r.DatabaseClient.Prepare(
+		`INSERT INTO chat_read_histories(chat_room_id, message_id, read_by)
+		 VALUES($1, $2, $3)`,
+	)
 	if err != nil {
 		return err
 	}

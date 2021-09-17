@@ -39,7 +39,7 @@ func Login(username string, password string) (*dbModels.User, error) {
 
 	userModel.Username = strings.TrimSpace(username)
 
-	if err := db.AppRepository.SearchUserByUsername(&userModel); err != nil {
+	if err := db.AppRepository.GetUserByUsername(&userModel); err != nil {
 		return nil, err
 	}
 

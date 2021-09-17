@@ -5,7 +5,11 @@ import (
 )
 
 func (r *Repository) GetUserById(userModel *dbModels.User) error {
-	statement, err := r.DatabaseClient.Prepare("SELECT user_id, username, created_at, updated_at FROM users WHERE deleted_at IS NULL AND user_id = $1")
+	statement, err := r.DatabaseClient.Prepare(
+		`SELECT user_id, username, created_at, updated_at 
+		FROM users 
+		WHERE deleted_at IS NULL AND user_id = $1`,
+	)
 	if err != nil {
 		return err
 	}
@@ -24,7 +28,11 @@ func (r *Repository) GetUserById(userModel *dbModels.User) error {
 }
 
 func (r *Repository) CreateNewUser(userModel *dbModels.User) error {
-	statement, err := r.DatabaseClient.Prepare("INSERT INTO users(username, password) VALUES($1, $2) RETURNING user_id, created_at, updated_at")
+	statement, err := r.DatabaseClient.Prepare(
+		`INSERT INTO users(username, password) 
+		VALUES($1, $2) 
+		RETURNING user_id, created_at, updated_at`,
+	)
 	if err != nil {
 		return err
 	}
@@ -43,8 +51,13 @@ func (r *Repository) CreateNewUser(userModel *dbModels.User) error {
 	return nil
 }
 
-func (r *Repository) SearchUserByUsername(userModel *dbModels.User) error {
-	statement, err := r.DatabaseClient.Prepare("SELECT user_id, username, password, created_at, updated_at FROM users WHERE deleted_at IS NULL AND username=$1")
+func (r *Repository) GetUserByUsername(userModel *dbModels.User) error {
+	statement, err := r.DatabaseClient.Prepare(
+		`SELECT user_id, username, password, created_at, updated_at 
+		FROM users 
+		WHERE deleted_at IS NULL AND username=$1
+		LIMIT 1`,
+	)
 	if err != nil {
 		return err
 	}
