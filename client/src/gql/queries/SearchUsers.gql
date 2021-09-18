@@ -1,0 +1,10 @@
+query SearchUsers($searchQuery: String!, $limit: Int!, $offset: Int!) {
+  search_users(search_query: $searchQuery, limit: $limit, offset: $offset) {
+    search_query
+    has_more
+    search_result {
+      user_id
+      username
+    }
+  }
+}

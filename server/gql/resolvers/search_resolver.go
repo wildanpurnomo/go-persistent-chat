@@ -18,6 +18,12 @@ var (
 
 		var searchModel dbModels.UserSearch
 		searchModel.SearchQuery = params.Args["search_query"].(string)
+
+		if searchModel.SearchQuery == "" {
+			searchModel.HasMore = false
+			return searchModel, nil
+		}
+
 		searchModel.Limit = params.Args["limit"].(int)
 		searchModel.Offset = params.Args["offset"].(int)
 
