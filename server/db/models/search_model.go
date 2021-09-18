@@ -21,7 +21,9 @@ func (s *UserSearch) ResultNotEmpty() bool {
 func (s *UserSearch) DetermineHasMore() {
 	totalRows := s.SearchResult[0].TotalRows
 
-	if totalRows%s.Limit == 0 {
+	if s.Limit > totalRows {
+		s.HasMore = false
+	} else if totalRows%s.Limit == 0 {
 		s.HasMore = s.Offset < totalRows/s.Limit-1
 	} else {
 		s.HasMore = s.Offset < (totalRows+s.Limit-1)/s.Limit
