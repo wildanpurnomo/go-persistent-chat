@@ -12,5 +12,10 @@ export const mainRouter = {
       name: "SearchUsers",
       component: () => import("@/partial-views/main/SearchUsers.vue"),
     },
+    {
+      path: "/main/chat/room/:chatRoomId",
+      name: "ChatRoom",
+      component: () => import("@/partial-views/main/ChatRoom.vue"),
+    },
   ],
 };

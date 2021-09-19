@@ -19,11 +19,15 @@
       </v-col>
       <v-col
         cols="12"
-        v-for="(item, index) in search_users.search_result"
+        v-for="(item, index) in search_users ? search_users.search_result : []"
         :key="index"
         class="mb-3 px-5 py-1 white rounded-lg"
       >
-        <UserListItem :username="item.username" />
+        <UserListItem
+          :username="item.username"
+          :userId="item.user_id"
+          @on-chat-button-click="createChatRoom($event)"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -32,6 +36,8 @@
 <script>
 import UserListItem from "@/components/UserListItem.vue";
 import SEARCH_USERS_QUERY from "@/gql/queries/SearchUsers.gql";
+import CREATE_CHAT_ROOM_MUTATION from "@/gql/mutations/CreateChatRoom.gql";
+import { EventBus } from "@/bus";
 
 export default {
   name: "SearchUsers",
@@ -75,6 +81,46 @@ export default {
       this.lastSetTimeoutId = setTimeout(() => {
         this.searchQuery = query;
       }, 2000);
+    },
+
+    async createChatRoom(recipientId) {
+      try {
+        let result = await this.$apollo.mutate({
+          mutation: CREATE_CHAT_ROOM_MUTATION,
+          variables: {
+            memberIds: [recipientId],
+          },
+          optimisticResponse: {
+            __typename: "Mutation",
+            create_chat_room: {
+              __typename: "ChatRoomType",
+              chat_room_id: -1,
+              created_at: "",
+              updated_at: "",
+              deleted_at: "",
+            },
+          },
+        });
+
+        if (result !== null) {
+          this.$router.push({
+            name: "ChatRoom",
+            params: {
+              chatRoomId: result.data.create_chat_room.chat_room_id,
+            },
+          });
+        } else {
+          EventBus.$emit(
+            "onShowSnackbar",
+            "Something's wrong. Please try again."
+          );
+        }
+      } catch (error) {
+        EventBus.$emit(
+          "onShowSnackbar",
+          "Something's wrong. Please try again."
+        );
+      }
     },
   },
 

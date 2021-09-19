@@ -1,0 +1,5 @@
+mutation CreateChatRoom($memberIds: [Int]!) {
+  create_chat_room(member_ids: $memberIds) {
+    chat_room_id
+  }
+}
